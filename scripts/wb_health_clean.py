@@ -3,8 +3,7 @@
 # this dataset was produced by crazy people it seems
 
 import pandas as pd
-# import os
-# print(os.getcwd())
+
 
 d = pd.read_csv('./raw/wb_health.csv').drop(columns = ['Series Code', 'Country Code'])
 d.query("`Series Name`=='Life expectancy at birth, female (years)' \
@@ -25,3 +24,4 @@ d = d.pivot(index = 'year', values = 'lifexpec_yrs_fem', columns = 'country').dr
 d.columns.name = ''
 
 d.to_csv('../stor155_sp21/data/wb_lifexpec.csv')
+d.to_excel('../stor155_sp21/data/wb_lifexpec.xlsx')
