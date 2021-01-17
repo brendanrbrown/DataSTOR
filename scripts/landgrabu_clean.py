@@ -14,6 +14,7 @@ d = d.apply(lambda x: x.str.replace('UNKNOWN|nan', 'NaN'))
 # type conversion
 # note strictness of assignment using .loc
 # https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html
+# using u as index anyway
 u = d['university']
 d = d.loc[:, "total_morrill_acres_found":].apply(lambda x: x.astype('float64'))
 d.index = u
