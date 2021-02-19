@@ -93,16 +93,21 @@ def process_dsamples(pathout = '', filepre = ''):
             # any undesireables?
             checkna = any([dd.loc[:, 'masks_never':'masks_always'].apply(lambda x: x.notna().sum()).eq(0).any() for dd in out])
 
-            # reconsider error type
             assert not checkna, "NA values discovered in essential data columns, csv not written"
 
-            # write out to csv, with id
-            filecsv = pathout + filepre + '_{}.csv'
-            filexl = pathout + filepre + '_{}.xlsx'
+            # datasets must have at least 15 observations
+            out = [dd for dd in out if dd.shape[0] >= 15]
 
-            for i, d in enumerate(out):
-                d.to_csv(filecsv.format(i), index = False)
-                d.to_excel(filexl.format(i), index = False)
+            # write out to csv, with id
+            filecsv = pathout + '/' + filepre + '_{}.csv'
+            filexl = pathout + '/' + filepre + '_{}.xlsx'
+
+            for i, v in enumerate(out):
+                try:
+                    v.to_csv(filecsv.format(i), index = False)
+                    v.to_excel(filexl.format(i), index = False)
+                except:
+                    continue
 
         return wrapper
     return processer
@@ -139,11 +144,12 @@ def project_data(county = None, masks = None):
 
 
 # TODO:
+# make this consistent with the fedapi script
 # make special class and check class type before processing
 # checks for all masks data missing for a given state (none missing in original survey)
 
 # THIS IS WHERE YOU SET THE FILE OUT PATH
-@process_dsamples(pathout = '../stor155_sp21/', filepre = 'CD')
+@process_dsamples(pathout = '../stor155_sp21/project/CV', filepre = 'CV')
 def sample_and_dump(data, n, **kwargs):
     """
     randomly sample states with replacement (default) from d created by project data, and for each state:
@@ -172,6 +178,7 @@ def sample_and_dump(data, n, **kwargs):
 
 
 
+
 ######
 # ISSUES
 ######
@@ -189,7 +196,7 @@ def sample_and_dump(data, n, **kwargs):
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser('Sample states and write out county-by-state level for STOR155 projects, spring `21')
+    parser = argparse.ArgumentParser('Sample states and write out county-by-state level for STOR155 projects, spring `21. Data read from dataSTOR/raw')
     parser.add_argument('n', type = int, help = 'number of datasets, equal to number of students')
 
     args = parser.parse_args()

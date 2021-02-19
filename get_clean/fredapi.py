@@ -184,10 +184,10 @@ def get_and_dump(key, n, path):
     
     s = pd.Series(range(len(out))).sample(n, replace = True)
     
-    for i, _ in enumerate(s):
+    for i, v in enumerate(s):
         try:
-            out[i].to_csv(path + '/FRED_{i}.csv', index = False)
-            out[i].to_excel(path + '/FRED_{i}.xlsx', index = False)
+            out[v].to_csv(path + f'/FRED_{i}.csv', index = False)
+            out[v].to_excel(path + f'/FRED_{i}.xlsx', index = False)
         except:
             continue
             
@@ -204,7 +204,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser('Get and write out FRED gdp and employment by gender for select countries, STOR155 projects, spring `21')
     parser.add_argument('key', type = str, help = 'your FRED api key')
     parser.add_argument('n', type = int, help = 'number of datasets, equal to number of students')
-    parser.add_argument('path_out', type = 'str', help = 'filepath to store output, as path_out/FRED_{i}.{csv,xlsx} for i = 0...n-1')
+    parser.add_argument('path_out', type = str, help = 'filepath to store output, as path_out/FRED_{i}.{csv,xlsx} for i = 0...n-1')
 
     args = parser.parse_args()
 
