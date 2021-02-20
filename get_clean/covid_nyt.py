@@ -29,19 +29,22 @@ from functools import wraps
 # GETTERS
 #######
 
-# INITIAL
-# masks = pd.read_csv('https://github.com/nytimes/covid-19-data/raw/master/mask-use/mask-use-by-county.csv')
-# county = pd.read_csv('https://github.com/nytimes/covid-19-data/blob/master/us-counties.csv?raw=true')
-# univ = pd.read_csv('https://raw.githubusercontent.com/nytimes/covid-19-data/master/colleges/colleges.csv')
+def get_raw():
 
-# masks.to_csv('raw/maskuse_nyt.csv', index = False)
-# county.to_csv('raw/covid_nyt.csv', index = False)
-# univ.to_csv('raw/univ_covid_nyt.csv', index = False)
+    base = 'https://github.com/nytimes/covid-19-data/raw/master/'
+    url = dict(maskuse = 'mask-use/mask-use-by-county',
+                covid = 'us-counties', univ_covid = 'colleges/colleges')
 
-# LOAD
-# masks = pd.read_csv('raw/maskuse_nyt.csv')
-# county = pd.read_csv('raw/covid_nyt.csv')
-#univ = pd.read_csv('raw/univ_covid_nyt.csv')
+    url = {k: base + p + '.csv' for k, p in url.items()}
+
+    for k, u in url.items():
+        try:
+            out = f'raw/{k}_nyt.csv'
+            d = pd.read_csv(u)
+            d.to_csv(out, index = False)
+        except:
+            continue
+
 
 #######
 # FUNCTIONS
@@ -188,18 +191,21 @@ def sample_and_dump(data, n, **kwargs):
 
 
 
-
-######
-# RUN
-######
+#####
+#RUN
+#####
 
 if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser('Sample states and write out county-by-state level for STOR155 projects, spring `21. Data read from dataSTOR/raw')
     parser.add_argument('n', type = int, help = 'number of datasets, equal to number of students')
+    parser.add_argument('--get', action = 'store_true', help = 'get the raw data first')
 
     args = parser.parse_args()
+
+    if args.get:
+        get_raw()
 
     masks = pd.read_csv('raw/maskuse_nyt.csv')
     county = pd.read_csv('raw/covid_nyt.csv')
