@@ -98,9 +98,6 @@ def process_dsamples(pathout = '', filepre = ''):
 
             assert not checkna, "NA values discovered in essential data columns, csv not written"
 
-            # datasets must have at least 15 observations
-            out = [dd for dd in out if dd.shape[0] >= 15]
-
             # write out to csv, with id
             filecsv = pathout + '/' + filepre + '_{}.csv'
             filexl = pathout + '/' + filepre + '_{}.xlsx'
@@ -166,12 +163,17 @@ def sample_and_dump(data, n, **kwargs):
     if 'replace' not in kwargs.keys():
         kwargs['replace'] = True
 
+
+    # states must have at least 15 observations (counties)
     # remove states where there is no mask use data
     s = pd.Series(data.state.unique()).sort_values().reset_index(drop = True)
+
     nonmiss = data.groupby('state').apply(lambda x: x.notna().sum()).loc[:, 'masks_never':'masks_always'].sum(axis = 1).ge(1)
     nonmiss = nonmiss.sort_index().reset_index(drop = True)
-    s = s.loc[nonmiss]
 
+    large = data.groupby('state').size().ge(15).sort_index().reset_index(drop = True)
+
+    s = s.loc[nonmiss & large]
     s = s.sample(n, **kwargs)
 
     data = [data.loc[data.state == v] for k, v in s.items()]
