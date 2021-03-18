@@ -120,8 +120,9 @@ def covid_by_co(data = None):
     data.loc[:, 'date'] = pd.to_datetime(data.loc[:, 'date'])
     data.loc[:, 'county'] = data.loc[:, 'county'].mask(data.county.eq('unknown'), pd.NA)
 
-    data = data.groupby(['county', 'state']).agg(cases = ('cases', 'sum'),
-    deaths = ('deaths', 'sum'), last_record_on = ('date', 'max'),
+    # cases, deaths are cumulative
+    data = data.groupby(['county', 'state']).agg(cases = ('cases', 'max'),
+    deaths = ('deaths', 'max'), last_record_on = ('date', 'max'),
     fips = ('fips', lambda x: x.iloc[0])).reset_index()
 
     return data
